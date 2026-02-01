@@ -1,11 +1,16 @@
 import {Router} from "express";
 import {v4 as uuid} from "uuid";
 import type { Category, Expense } from "../types/expense";
+import {tempDbExpenses} from "../data/expensesTempDb";
 
 const expenseRoutes = Router();
 
 // State: expense array
 let expenses: Expense[] = [];
+let tempDbExpensesImported: Expense[] = tempDbExpenses;
+
+// Initialize expenses with tempDbExpensesImported
+expenses = [...tempDbExpensesImported];
 
 function addExpense(amount: number, category: Category, note?: string): Expense {
   const expense: Expense = {
@@ -31,7 +36,7 @@ expenseRoutes.get("/expenses", (req, res) => {
 expenseRoutes.post("/expenses", (req, res) => {
     const { amount, category, note } = req.body;
     const expense = addExpense(amount, category, note);
-    res.json(expense);
+    res.status(201).json(expense);
 });
 
 expenseRoutes.delete("/expenses/:id", (req, res) => {
